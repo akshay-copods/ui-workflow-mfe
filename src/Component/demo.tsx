@@ -1,194 +1,116 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import ReactFlow, {
-  addEdge,
-  MarkerType,
-  ReactFlowProvider,
-  useEdgesState,
-  useNodesState,
-} from "reactflow";
-import "reactflow/dist/style.css";
-
-const initialNodes = [
-  {
-    id: "1",
-    name: "a",
-    children: [
-      {
-        id: "2",
-        name: "b",
-        parent: "1",
-        children: [
-          {
-            id: "3",
-            name: "c",
-            parent: "2",
-            children: [
-              {
-                id: "4",
-                parent: "3",
-                name: "d",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: "5",
-        name: "b",
-        parent: "1",
-        children: [
-          {
-            id: "6",
-            name: "c",
-            parent: "5",
-            children: [
-              {
-                id: "7",
-                parent: "6",
-                name: "d",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: "8",
-        name: "b",
-        parent: "1",
-        children: [
-          {
-            id: "9",
-            name: "c",
-            parent: "8",
-            children: [
-              {
-                id: "10",
-                parent: "9",
-                name: "d",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: "11",
-        name: "f",
-        parent: "1",
-      },
+import { Button, Input, Select } from "antd";
+import React from "react";
+const httpData = {
+  defaultDomain: "https://sandboxurl.com/dev7-zsddls.com/signup",
+  isCustomDomain: true,
+  triggerType: [
+    "HTTP based trigger",
+    "SMTP based trigger",
+    "FTP based trigger",
+  ],
+  customDomain: {
+    appEnv: ["Dev", "Staging", "Prod"],
+    url: "https://test.dev.com",
+    urlPath: "",
+    params: [
+      { key: "plan", value: "standerd" },
+      { key: "search", value: "true" },
     ],
   },
-];
-
-const initialEdges = [
-  {
-    id: "edges-e5-7",
-    source: "0",
-    target: "1",
-    label: "+",
-    labelBgPadding: [8, 4],
-    labelBgBorderRadius: 4,
-    labelBgStyle: { fill: "#FFCC00", color: "#fff", fillOpacity: 0.7 },
-    markerEnd: {
-      type: MarkerType.ArrowClosed,
-    },
-  },
-];
-
-let id = 1;
-const getId = () => `${id++}`;
-
-const fitViewOptions = {
-  padding: 1,
 };
-
-const ExpandAndCollapse = (props) => {
-  const reactFlowWrapper = useRef(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    []
-  );
-
-  useEffect(() => {
-    setNodes([
-      ...initialNodes.map((item) => {
-        return {
-          id: item.id,
-          type: item?.children?.length ? "default" : "output",
-          data: { label: item.name, children: item.children },
-          position: { x: 0, y: 0 },
-          sourcePosition: "right",
-          targetPosition: "left",
-        };
-      }),
-    ]);
-  }, []);
-
-  const handleNodeClick = (e, data) => {
-    const findChildren = nodes.filter((item) => item?.data?.parent === data.id);
-    if (!findChildren.length) {
-      const itemChildren = [
-        ...data.data.children.map((item, i) => {
-          return {
-            id: item.id,
-            type: item?.children?.length ? "default" : "output",
-            data: {
-              label: item.name,
-              children: item.children,
-              parent: item.parent,
-            },
-            position: {
-              x: data.position.x + 200,
-              y: i === 0 ? data.position.y : data.position.y + i * 100,
-            },
-            sourcePosition: "right",
-            targetPosition: "left",
-          };
-        }),
-      ];
-      setEdges([
-        ...edges,
-        ...itemChildren.map((item) => {
-          return {
-            id: String(parseInt(Math.random(100000000) * 1000000)),
-            source: item?.data?.parent,
-            target: item?.id,
-            markerEnd: {
-              type: MarkerType.ArrowClosed,
-            },
-          };
-        }),
-      ]);
-      setNodes(nodes.concat(itemChildren));
-    } else {
-      setNodes([...nodes.filter((item) => item?.data?.parent !== data.id)]);
-      setEdges([...edges.filter((item) => data.id !== item.source)]);
-    }
-  };
-
+const HttpForm = () => {
   return (
-    <div
-      className='wrapper'
-      ref={reactFlowWrapper}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onNodeClick={handleNodeClick}
-        fitView
-        maxZoom={0.9}
-        defaultViewport={{ x: 1, y: 1, zoom: 0.5 }}
-        fitViewOptions={fitViewOptions}
-      />
+    <div className='flex flex-col'>
+      <div>
+        <label htmlFor=''>Sandbox URL</label>
+        <Input
+          type='text'
+          value=''
+        />
+      </div>
+      <div className='flex gap-10 justify-between'>
+        <label htmlFor=''>Trigger Type</label>
+        <Select
+          className='w-full'
+          defaultValue='HTTP based trigger'
+          style={{ width: 120 }}
+          options={[
+            { value: "HTTP based trigger", label: "HTTP based trigger" },
+            { value: "API based trigger", label: "API based trigger" },
+            {
+              value: "Message based trigger",
+              label: "Message based trigger",
+            },
+          ]}
+        />
+      </div>
+      <div className='flex'>
+        <div></div>
+        <div>
+          <Button>Connfigure Custom domain</Button>
+        </div>
+      </div>
+      <div className='custom-domain-settings flex flex-col gap-4 border border-black'>
+        <div className='flex justify-between'>
+          <h3 className='text-lg'>
+            Configure Custom domain for your environment
+          </h3>{" "}
+          <span>X</span>
+        </div>
+        <div className='flex flex-col gap-5'>
+          <div className='flex flex-row'>
+            <label htmlFor=''>Your App Environment</label>
+            <Select
+              className='w-full'
+              defaultValue='HTTP based trigger'
+              style={{ width: 120 }}
+              options={[
+                { value: "Dev", label: "Dev" },
+                { value: "Staging", label: "Staging" },
+                {
+                  value: "Production",
+                  label: "Production",
+                },
+              ]}
+            />
+          </div>
+          <div className='flex'>
+            <label htmlFor=''>Custom Domain URL</label>
+            <Input type='text' />
+          </div>
+        </div>
+        <div>
+          <label htmlFor=''>Path</label>
+          <Input type='text' />
+        </div>
+        <div>
+          <label htmlFor=''>Query Parameter</label>
+          <div className='flex'>
+            <Input
+              placeholder='Enter key'
+              type='text'
+            />
+
+            <span>=</span>
+            <Input
+              placeholder='Enter value'
+              type='text'
+            />
+
+            <span>+</span>
+          </div>
+          <div>
+            <p>To configure your custom domain, complete the DNS setup</p>
+            <input type='checkbox' />
+            <span>I,acknowledge to have the completed the setup</span>
+          </div>
+          <Button>Verify & Save</Button>
+        </div>
+      </div>
+      <footer className='panel-footer flex'>
+        <Button>Test with sandbox URL</Button>
+        <Button>Test with Custom Domain</Button>
+      </footer>
     </div>
   );
 };
-
-export default () => (
-  <ReactFlowProvider>
-    <ExpandAndCollapse />
-  </ReactFlowProvider>
-);

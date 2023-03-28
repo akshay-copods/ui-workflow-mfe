@@ -1,164 +1,124 @@
-import { Button, Drawer, Input, Select } from "antd";
+import { Drawer, Input, Select } from "antd";
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { ReactFlow } from "reactflow";
+import "reactflow/dist/style.css";
 import "./index.scss";
-const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
 
-const httpData = {
-  defaultDomain: "https://sandboxurl.com/dev7-zsddls.com/signup",
-  isCustomDomain: true,
-  triggerType: [
-    "HTTP based trigger",
-    "SMTP based trigger",
-    "FTP based trigger",
+const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
+const HTTP_CONFIG = {
+  configTitle: "HTTP Trigger",
+  sections: [
+    {
+      sectionTitle: "Sandbox Settings",
+      inputs: [
+        {
+          label: "URL",
+          inputType: "TEXT",
+          value: "https://sandboxurl.com/dev7-zsddls.com/signup",
+          options: [],
+        },
+        {
+          label: "Trigger Type",
+          inputType: "SELECT",
+          value: "HTTP based trigger",
+          options: [
+            { value: "HTTP based trigger", label: "HTTP based trigger" },
+            { value: "API based trigger", label: "API based trigger" },
+          ],
+        },
+      ],
+    },
   ],
-  customDomain: {
-    appEnv: ["Dev", "Staging", "Prod"],
-    url: "https://test.dev.com",
-    urlPath: "",
-    params: [
-      { key: "plan", value: "standerd" },
-      { key: "search", value: "true" },
-    ],
-  },
+};
+const AUTH_CONFIG = {
+  configTitle: "AUTH Config",
+  sections: [
+    {
+      sectionTitle: "Sign up IDP",
+      inputs: [
+        {
+          label: "Tenant Name",
+          inputType: "TEXT",
+          value: "New Tenant",
+          options: [],
+        },
+        {
+          label: "App Environment",
+          inputType: "SELECT",
+          value: "Dev",
+          options: [
+            { value: "Dev", label: "Dev" },
+            { value: "Staging", label: "Staging" },
+          ],
+        },
+      ],
+    },
+  ],
 };
 const initialNodes = [
-  { id: "1", position: { x: 0, y: 0 }, data: { label: "1" } },
-  { id: "2", position: { x: 0, y: 100 }, data: { label: "2" } },
   {
     id: "1",
-    position: { x: 0, y: 0 },
-    data: { label: "HTTP TRIGGER", type: "HTTP", data: httpData },
+    position: { x: 700, y: 300 },
+    data: { label: "HTTP TRIGGER", type: "HTTP", data: HTTP_CONFIG },
+    style: { backgroundColor: "rgba(255, 0, 0, 0.2)" },
   },
   {
     id: "2",
-    position: { x: 0, y: 100 },
-    data: { label: "AUTHENTICATE", type: "AUTH" },
+    position: { x: 700, y: 400 },
+    data: { label: "AUTHENTICATE", type: "AUTH", data: AUTH_CONFIG },
   },
 ];
 
 const App = () => {
   const [open, setOpen] = useState(false);
-  const [panel, setPanel] = useState("");
-
+  const [activeConfig, setActiveConfig] = useState({}) as any;
+  console.log("ACTIVE CONFIG", activeConfig);
   const showDrawer = () => {
     setOpen(true);
   };
 
   const onClose = () => {
-    setPanel("");
+    setActiveConfig("");
   };
 
   const onNodeClick = (event, node) => {
-    setPanel(node.data.type);
+    setActiveConfig(node.data.data);
     console.log("click node", node);
   };
-  const HttpForm = () => {
-    return (
-      <div className='flex flex-col'>
-        <div>
-          <label htmlFor=''>Sandbox URL</label>
-          <Input
-            type='text'
-            value={httpData.defaultDomain}
-          />
-        </div>
-        <div className='flex gap-10 justify-between'>
-          <label htmlFor=''>Trigger Type</label>
-          <Select
-            className='w-full'
-            defaultValue='HTTP based trigger'
-            style={{ width: 120 }}
-            options={[
-              { value: "HTTP based trigger", label: "HTTP based trigger" },
-              { value: "API based trigger", label: "API based trigger" },
-              {
-                value: "Message based trigger",
-                label: "Message based trigger",
-              },
-            ]}
-          />
-        </div>
-        <div className='flex'>
-          <div></div>
-          <div>
-            <Button>Connfigure Custom domain</Button>
-          </div>
-        </div>
-        <div className='custom-domain-settings flex flex-col gap-4 border border-black'>
-          <div className='flex justify-between'>
-            <h3 className='text-lg'>
-              Configure Custom domain for your environment
-            </h3>{" "}
-            <span>X</span>
-          </div>
-          <div className='flex flex-col gap-5'>
-            <div className='flex flex-row'>
-              <label htmlFor=''>Your App Environment</label>
-              <Select
-                className='w-full'
-                defaultValue='HTTP based trigger'
-                style={{ width: 120 }}
-                options={[
-                  { value: "Dev", label: "Dev" },
-                  { value: "Staging", label: "Staging" },
-                  {
-                    value: "Production",
-                    label: "Production",
-                  },
-                ]}
-              />
-            </div>
-            <div className='flex'>
-              <label htmlFor=''>Custom Domain URL</label>
-              <Input type='text' />
-            </div>
-          </div>
-          <div>
-            <label htmlFor=''>Path</label>
-            <Input type='text' />
-          </div>
-          <div>
-            <label htmlFor=''>Query Parameter</label>
-            <div className='flex'>
-              <Input
-                placeholder='Enter key'
-                type='text'
-              />
 
-              <span>=</span>
-              <Input
-                placeholder='Enter value'
-                type='text'
-              />
-
-              <span>+</span>
-            </div>
-            <div>
-              <p>To configure your custom domain, complete the DNS setup</p>
-              <input type='checkbox' />
-              <span>I,acknowledge to have the completed the setup</span>
-            </div>
-            <Button>Verify & Save</Button>
-          </div>
-        </div>
-        <footer className='panel-footer flex'>
-          <Button>Test with sandbox URL</Button>
-          <Button>Test with Custom Domain</Button>
-        </footer>
-      </div>
-    );
-  };
   return (
     <div className='mt-10 text-3xl w-full h-screen'>
       {
         <Drawer
-          title='Config'
+          title={activeConfig?.configTitle}
           placement='right'
           onClose={onClose}
-          open={true}>
-          <HttpForm />
+          open={Object.keys(activeConfig).length !== 0}>
+          {activeConfig?.sections?.map((section) => (
+            <div className='flex flex-col gap-5'>
+              <h3 className='text-lg'>{section.sectionTitle}</h3>
+              {section.inputs?.map((input) => (
+                <div className='flex flex-col gap-2'>
+                  <label htmlFor=''>{input.label}</label>
+                  {input.inputType === "TEXT" && (
+                    <Input
+                      type='text'
+                      value={input.value}
+                      className='border border-black'
+                    />
+                  )}
+                  {input.inputType === "SELECT" && (
+                    <Select
+                      defaultValue={input.value}
+                      options={input.options}
+                      id=''
+                      className='border border-black'></Select>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
         </Drawer>
       }
       <div style={{ width: "100vw", height: "100vh" }}>
