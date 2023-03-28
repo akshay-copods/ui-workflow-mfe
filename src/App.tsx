@@ -122,13 +122,25 @@ const App = () => {
           <div>
             <label htmlFor=''>Query Parameter</label>
             <div className='flex'>
-              <Input type='text' />
+              <Input
+                placeholder='Enter key'
+                type='text'
+              />
 
               <span>=</span>
-              <Input type='text' />
+              <Input
+                placeholder='Enter value'
+                type='text'
+              />
 
               <span>+</span>
             </div>
+            <div>
+              <p>To configure your custom domain, complete the DNS setup</p>
+              <input type='checkbox' />
+              <span>I,acknowledge to have the completed the setup</span>
+            </div>
+            <Button>Verify & Save</Button>
           </div>
         </div>
         <footer className='panel-footer flex'>
