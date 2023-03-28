@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import ReactDOM from "react-dom";
 
 import ReactFlow, {Background,
@@ -13,15 +13,59 @@ import HeaderLayout from './components/HeaderLayout';
 import { default as NarrowLeftSidebar } from "./components/SidebarLayout";
 import RightPane from './components/RightPane';
 import NodeTileStyle from "./components/NodeTileStyle"
+import SettingsDrawer from "./components/SettingsDrawer";
 
-const onNodeClick = (event, node) => console.log('click node', node);
 
-const edgeStyle = {
-  strokeWidth: 2,
-  color: 'red'
+const initialPosition = { x: 0, y: 50 };
+const nodeDistance = 190;
+
+const calculateNodePosition = (index) => {
+  return {
+    x: initialPosition.x,
+    y: initialPosition.y + nodeDistance * index,
+  };
+};
+
+const mockSettings = {
+  "SET_HTTP_TRIGGER" : {
+    title: "HTTP Trigger",
+    settings: [
+      {
+        section: "Sandbox Settings",
+        settings: [
+          {
+            key: "sandboxUrl",
+            label: "Sandbox URL",
+            type: "text",
+            value: "https://example.com/sandbox-url",
+            readOnly: true,
+          },
+          {
+            key: "triggerType",
+            label: "Trigger Type",
+            type: "text",
+            value: "HTTP Trigger",
+            readOnly: true,
+          },
+        ],
+      },
+    ],
+  },
+  "SET_AUTHENTICATE" : {
+    title: "Authenticate",
+  },
+  "SET_CREATE_TENANT" : {
+    title: "Create tenant",
+  },
+  "SET_USER_REDIRECT" : {
+    title: "User Redirect",
+  }
 }
+
 const HTTPData = {
-  label: "HTTP Trigger",
+  settingsID: 'SET_HTTP_TRIGGER',
+  label: "HTTP TRIGGER",
+  type: "HTTP",
   defaultDomain: "https://sandboxurl.com/dev7-zsddls.com/signup",
   isCustomDomain: true,
   triggerType: ["HTTP based trigger", "SMTP based trigger", "FTP based trigger"],
@@ -41,74 +85,77 @@ const initialNodes = [
     id: "1",
     type: "custom",
     data: HTTPData,
-    position: { x: 0, y: 50 },
+    position: calculateNodePosition(0),
   },
   {
     id: "2",
     type: "custom",
     data: {
+      settingsID: 'SET_AUTHENTICATE',
       label: "Authenticate User",
       description: "description",
       icon: 'mdi:shield-account-outline',
     },
 
-    position: { x: -10, y: 200 },
+    position: calculateNodePosition(1),
   },
   {
     id: "3",
     type: "custom",
     data: {
+      settingsID: 'SET_CREATE_TENANT',
       label: "Create Tenant",
       description: "description",
       icon: 'material-symbols:add-home-outline'
     ,
     },
 
-    position: { x: 0, y: 350 },
+    position: calculateNodePosition(2),
   },
   {
     id: "4",
     type: "custom",
     data: {
+      settingsID: 'SET_USER_REDIRECT',
       label: "Redirect User",
       description: "description",
       icon: 'ion:navigate-circle-outline',
     },
 
-    position: { x: 0, y: 500 },
+    position: calculateNodePosition(3),
   },
 ];
 const edgeStyles = {
   strokeWidth: 2,
 }
+const edgeType = "straight";
 const initialEdges = [
     {
     id: "e1-2",
     source: "1",
     target: "2",
-    type: "smoothstep",
-    label: 'test',
+    type: edgeType,
     style: edgeStyles,
   },
   {
     id: "e1-3",
     source: "2",
     target: "3",
-    type: "smoothstep",
+    type: edgeType,
     style: edgeStyles,
   },
   {
     id: "e1-4",
     source: "3",
     target: "4",
-    type: "smoothstep",
+    type: edgeType,
     style: edgeStyles,
   },
   {
     id: "e1-5",
     source: "4",
     target: "5",
-    type: "smoothstep",
+    type: edgeType,
     style: edgeStyles,
   },
 ];
@@ -119,13 +166,40 @@ const nodeTypes = {
 
 
 
+
 const App = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [drawerData, setDrawerData] = useState(null);
+
+  const sampleData = {
+    key: 'value',
+  };
+
+  const onNodeClick = (event, node) => {
+    const settingsID = node.data.settingsID;
+    const settings = mockSettings[settingsID];
+    console.log(settingsID);
+
+    if (settings) {
+      console.log('Settings for node:', settingsID, settings);
+      setDrawerData(settings);
+      setShowDrawer(true);
+    } else {
+      console.log('Settings not found for node:', settingsID);
+    }
+  };
+
+  const closeDrawer = () => {
+    setShowDrawer(false);
+  };
+
   return (
       <div className="flex h-full">
-        <RightPane />
         <NarrowLeftSidebar />
+        <SettingsDrawer data={drawerData} open={showDrawer} onClose={closeDrawer} />
+
         {/* Content area */}
 
         <div className="flex flex-1 flex-col overflow-hidden">
