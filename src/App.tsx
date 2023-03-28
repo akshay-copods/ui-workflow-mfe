@@ -1,8 +1,8 @@
-import { Drawer, Input } from "antd";
+import { Button, Drawer, Input, Select } from "antd";
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { ReactFlow } from "reactflow";
-
+import "./index.scss";
 const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
 
 const httpData = {
@@ -47,14 +47,97 @@ const App = () => {
   };
 
   const onClose = () => {
-    setOpen(false);
+    setPanel("");
   };
 
   const onNodeClick = (event, node) => {
     setPanel(node.data.type);
     console.log("click node", node);
   };
+  const HttpForm = () => {
+    return (
+      <div className='flex flex-col'>
+        <div>
+          <label htmlFor=''>Sandbox URL</label>
+          <Input
+            type='text'
+            value={httpData.defaultDomain}
+          />
+        </div>
+        <div className='flex gap-10 justify-between'>
+          <label htmlFor=''>Trigger Type</label>
+          <Select
+            className='w-full'
+            defaultValue='HTTP based trigger'
+            style={{ width: 120 }}
+            options={[
+              { value: "HTTP based trigger", label: "HTTP based trigger" },
+              { value: "API based trigger", label: "API based trigger" },
+              {
+                value: "Message based trigger",
+                label: "Message based trigger",
+              },
+            ]}
+          />
+        </div>
+        <div className='flex'>
+          <div></div>
+          <div>
+            <Button>Connfigure Custom domain</Button>
+          </div>
+        </div>
+        <div className='custom-domain-settings flex flex-col gap-4 border border-black'>
+          <div className='flex justify-between'>
+            <h3 className='text-lg'>
+              Configure Custom domain for your environment
+            </h3>{" "}
+            <span>X</span>
+          </div>
+          <div className='flex flex-col gap-5'>
+            <div className='flex flex-row'>
+              <label htmlFor=''>Your App Environment</label>
+              <Select
+                className='w-full'
+                defaultValue='HTTP based trigger'
+                style={{ width: 120 }}
+                options={[
+                  { value: "Dev", label: "Dev" },
+                  { value: "Staging", label: "Staging" },
+                  {
+                    value: "Production",
+                    label: "Production",
+                  },
+                ]}
+              />
+            </div>
+            <div className='flex'>
+              <label htmlFor=''>Custom Domain URL</label>
+              <Input type='text' />
+            </div>
+          </div>
+          <div>
+            <label htmlFor=''>Path</label>
+            <Input type='text' />
+          </div>
+          <div>
+            <label htmlFor=''>Query Parameter</label>
+            <div className='flex'>
+              <Input type='text' />
 
+              <span>=</span>
+              <Input type='text' />
+
+              <span>+</span>
+            </div>
+          </div>
+        </div>
+        <footer className='panel-footer flex'>
+          <Button>Test with sandbox URL</Button>
+          <Button>Test with Custom Domain</Button>
+        </footer>
+      </div>
+    );
+  };
   return (
     <div className='mt-10 text-3xl w-full h-screen'>
       {
@@ -62,9 +145,8 @@ const App = () => {
           title='Config'
           placement='right'
           onClose={onClose}
-          open={panel === "HTTP"}>
-          <label htmlFor='Domain'>Domain</label>
-          <Input />
+          open={true}>
+          <HttpForm />
         </Drawer>
       }
       <div style={{ width: "100vw", height: "100vh" }}>
