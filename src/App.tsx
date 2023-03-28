@@ -11,7 +11,6 @@ import "reactflow/dist/style.css";
 
 import HeaderLayout from './components/HeaderLayout';
 import { default as NarrowLeftSidebar } from "./components/SidebarLayout";
-import RightPane from './components/RightPane';
 import NodeTileStyle from "./components/NodeTileStyle"
 import SettingsDrawer from "./components/SettingsDrawer";
 
