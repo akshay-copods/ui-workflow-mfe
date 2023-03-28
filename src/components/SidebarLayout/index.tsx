@@ -1,18 +1,13 @@
-import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-
-import Icon from "@mdi/react";
-
-import { mdiHome, mdiTransitConnectionVariant } from "@mdi/js";
-
 import React, { Fragment, useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { Icon } from '@iconify/react';
 
 const sidebarNavigation = [
-  { name: "Home", href: "#", icon: mdiHome, current: false },
+  { name: "Home", href: "#", icon: 'mdi:home', current: false },
   {
     name: "Workflows",
     href: "#",
-    icon: mdiTransitConnectionVariant,
+    icon: 'mdi:transit-connection-variant',
     current: true,
   },
 ];
@@ -43,7 +38,8 @@ export default function NarrowLeftSidebar() {
               )}
             >
               <span className="sr-only">{item.name}</span>
-              <Icon path={item.icon} size={1} />
+
+              <Icon icon={item.icon}/>
             </a>
           ))}
         </div>
@@ -94,10 +90,7 @@ export default function NarrowLeftSidebar() {
                       className="flex h-12 w-12 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-white"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <XMarkIcon
-                        className="h-6 w-6 text-white"
-                        aria-hidden="true"
-                      />
+                      <Icon icon="mdi:close-circle-outline" />
                       <span className="sr-only">Close sidebar</span>
                     </button>
                   </div>
@@ -128,7 +121,7 @@ export default function NarrowLeftSidebar() {
                           )}
                         >
                           <span className="sr-only">{item.name}</span>
-                          <Icon path={item.icon} size={1} />
+                          <Icon icon={item.icon} />
                         </a>
                       ))}
                     </div>

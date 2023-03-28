@@ -1,6 +1,5 @@
 import { Dialog } from "@headlessui/react";
-import { LinkIcon, QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { Icon } from '@iconify/react';
 import React, { useState } from "react";
 
 const team = [
@@ -55,27 +54,21 @@ export default function Example() {
               <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
                 <form className="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl">
                   <div className="h-0 flex-1 overflow-y-auto">
-                    <div className="bg-indigo-700 py-6 px-4 sm:px-6">
+                    <div className="py-6 px-4 sm:px-6">
                       <div className="flex items-center justify-between">
-                        <Dialog.Title className="text-base font-semibold leading-6 text-white">
-                          New Project
+                        <Dialog.Title className="text-base font-semibold leading-6">
+                           Settings
                         </Dialog.Title>
-                        <div className="ml-3 flex h-7 items-center">
+                        <div className="ml-3 flex h-7 items-center  border-b-2">
                           <button
                             type="button"
-                            className="rounded-md bg-indigo-700 text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
+                            className="rounded-md text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
                             onClick={() => setOpen(false)}
                           >
                             <span className="sr-only">Close panel</span>
-                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                            <Icon icon="mdi:close-circle-outline" />
                           </button>
                         </div>
-                      </div>
-                      <div className="mt-1">
-                        <p className="text-sm text-indigo-300">
-                          Get started by filling in the information below to
-                          create your new project.
-                        </p>
                       </div>
                     </div>
                     <div className="flex flex-1 flex-col justify-between">
@@ -105,10 +98,7 @@ export default function Example() {
                               href="#"
                               className="group inline-flex items-center font-medium text-indigo-600 hover:text-indigo-900"
                             >
-                              <LinkIcon
-                                className="h-5 w-5 text-indigo-500 group-hover:text-indigo-900"
-                                aria-hidden="true"
-                              />
+                              <Icon icon="mdi:link-variant" />
                               <span className="ml-2">Copy link</span>
                             </a>
                           </div>
@@ -117,10 +107,7 @@ export default function Example() {
                               href="#"
                               className="group inline-flex items-center text-gray-500 hover:text-gray-900"
                             >
-                              <QuestionMarkCircleIcon
-                                className="h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                aria-hidden="true"
-                              />
+                              <Icon icon="mdi:help-circle-outline" />
                               <span className="ml-2">
                                 Learn more about sharing
                               </span>

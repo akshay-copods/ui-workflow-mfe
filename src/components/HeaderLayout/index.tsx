@@ -1,7 +1,7 @@
-import { Menu, Transition } from "@headlessui/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Bars3BottomLeftIcon, BellIcon } from "@heroicons/react/24/outline";
 import React, { Fragment, useState } from "react";
+import { Menu, Transition } from "@headlessui/react";
+import { Icon } from '@iconify/react';
+
 
 const userNavigation = [
   { name: "Your Profile", href: "#" },
@@ -30,7 +30,7 @@ export default function HeaderLayout() {
             onClick={() => setMobileMenuOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>
-            <Bars3BottomLeftIcon className="h-6 w-6" aria-hidden="true" />
+            <Icon icon="mdi:menu" />
           </button>
           <div className="flex flex-1 justify-between px-4 sm:px-6">
             <div className="flex flex-1">
@@ -62,17 +62,11 @@ export default function HeaderLayout() {
             </div>
             <div className="ml-2 flex items-center space-x-4 sm:ml-6 sm:space-x-6">
               <a href="#" className="text-gray-400 hover:text-gray-500">
-                <MagnifyingGlassIcon
-                  className="h-5 w-5 flex-shrink-0"
-                  aria-hidden="true"
-                />
+                <Icon icon="mdi:magnify" />
                 <span className="sr-only">Search</span>
               </a>
               <a href="#" className="text-gray-400 hover:text-gray-500">
-                <BellIcon
-                  className="h-5 w-5 flex-shrink-0"
-                  aria-hidden="true"
-                />
+                <Icon icon="mdi:bell-badge" />
                 <span className="sr-only">Notification</span>
               </a>
               {/* Profile dropdown */}
