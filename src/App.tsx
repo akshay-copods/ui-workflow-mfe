@@ -30,8 +30,35 @@ const mockSettings = {
     title: "HTTP Trigger",
     settings: [
       {
-        section: "Sandbox Settings",
-        settings: [
+        sectionTitle: "Sandbox URL",
+        sectionBlocks: [
+          {
+            componentType: 'input',
+            key: "sandboxUrl",
+            label: "Sandbox URL",
+            type: "text",
+            value: "https://example.com/sandbox-url",
+            isDisabled: true,
+          },
+          {
+            componentType: 'select',
+            key: "triggerType",
+            label: "Trigger Type",
+            type: "text",
+            value: "HTTP Trigger",
+            isDisabled: false,
+          },
+        ],
+      },
+      {
+        sectionTitle: "Custom Domain URL",
+        isSectionZeroState: true,
+        sectionZeroState: {
+          componentType: 'Alert',
+          message: "Custom domain",
+          action: true,
+        },
+        sectionBlocks: [
           {
             key: "sandboxUrl",
             label: "Sandbox URL",
@@ -49,6 +76,7 @@ const mockSettings = {
         ],
       },
     ],
+
   },
   "SET_AUTHENTICATE" : {
     title: "Authenticate",
