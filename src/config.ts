@@ -118,7 +118,7 @@ export const mockConfig = {
         ],
       },
     ],
-    settingsActions: [
+    settingActions: [
       { type: "button", isDisabled: true, text: "Test sandbox URL" },
       {
         type: "button",

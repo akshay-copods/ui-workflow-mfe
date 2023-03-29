@@ -7,12 +7,12 @@ import ReactFlow, {
   useEdgesState,
   useNodesState,
 } from "reactflow";
-import "./index.scss";
-
 import HeaderLayout from "./components/HeaderLayout";
 import NodeTileStyle from "./components/NodeTileStyle";
 import SettingsDrawer from "./components/SettingsDrawer";
 import { default as NarrowLeftSidebar } from "./components/SidebarLayout";
+import { mockConfig } from "./config";
+import "./index.scss";
 
 import "reactflow/dist/style.css";
 
@@ -26,90 +26,10 @@ const calculateNodePosition = (index) => {
   };
 };
 
-const mockSettings = {
-  SET_HTTP_TRIGGER: {
-    title: "HTTP Trigger",
-    settings: [
-      {
-        sectionTitle: "Sandbox URL",
-        sectionBlocks: [
-          {
-            componentType: "input",
-            key: "sandboxUrl",
-            label: "Sandbox URL",
-            type: "text",
-            value: "https://example.com/sandbox-url",
-            isDisabled: true,
-          },
-          {
-            componentType: "select",
-            key: "triggerType",
-            label: "Trigger Type",
-            type: "text",
-            value: "HTTP Trigger",
-            isDisabled: false,
-          },
-        ],
-      },
-      {
-        sectionTitle: "Custom Domain URL",
-        isSectionZeroState: true,
-        sectionZeroState: {
-          componentType: "Alert",
-          message: "Custom domain",
-          action: true,
-        },
-        sectionBlocks: [
-          {
-            key: "sandboxUrl",
-            label: "Sandbox URL",
-            type: "text",
-            value: "https://example.com/sandbox-url",
-            readOnly: true,
-          },
-          {
-            key: "triggerType",
-            label: "Trigger Type",
-            type: "text",
-            value: "HTTP Trigger",
-            readOnly: true,
-          },
-        ],
-      },
-    ],
-  },
-  SET_AUTHENTICATE: {
-    title: "Authenticate",
-  },
-  SET_CREATE_TENANT: {
-    title: "Create tenant",
-  },
-  SET_USER_REDIRECT: {
-    title: "User Redirect",
-  },
-};
-
 const HTTPData = {
   settingsID: "SET_HTTP_TRIGGER",
   label: "HTTP TRIGGER",
-  type: "HTTP",
-  defaultDomain: "https://sandboxurl.com/dev7-zsddls.com/signup",
-  isCustomDomain: true,
-  triggerType: [
-    "HTTP based trigger",
-    "SMTP based trigger",
-    "FTP based trigger",
-  ],
   icon: "mdi:earth-arrow-right",
-  customDomain: {
-    appEnv: ["Dev", "Staging", "Prod"],
-    url: "https://test.dev.com",
-    urlPath: "",
-    params: [
-      { key: "plan", value: "standerd" },
-      { key: "search", value: "true" },
-    ],
-  },
 };
 const initialNodes = [
   {
@@ -124,7 +44,6 @@ const initialNodes = [
     data: {
       settingsID: "SET_AUTHENTICATE",
       label: "Authenticate User",
-      description: "description",
       icon: "mdi:shield-account-outline",
     },
 
@@ -136,7 +55,6 @@ const initialNodes = [
     data: {
       settingsID: "SET_CREATE_TENANT",
       label: "Create Tenant",
-      description: "description",
       icon: "material-symbols:add-home-outline",
     },
 
@@ -206,7 +124,7 @@ const App = () => {
 
   const onNodeClick = (event, node) => {
     const settingsID = node.data.settingsID;
-    const settings = mockSettings[settingsID];
+    const settings = mockConfig[settingsID];
     console.log(settingsID);
 
     if (settings) {
