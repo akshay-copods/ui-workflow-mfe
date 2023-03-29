@@ -1,193 +1,267 @@
-import { Drawer, Input, Select } from "antd";
-import React, { useState } from "react";
+import { default as React, useState } from "react";
 import ReactDOM from "react-dom";
-import { ReactFlow } from "reactflow";
-import "reactflow/dist/style.css";
+import ReactFlow, {
+  Background,
+  Controls,
+  MiniMap,
+  useEdgesState,
+  useNodesState,
+} from "reactflow";
 import "./index.scss";
 
-const initialEdges = [
-  { id: "1", source: "1", target: "2", show: false },
-{ id: "2", source: "2", target: "5", show: false },
-{ id: "3", source: "5", target: "7", show: false },
-{ id: "4", source: "1", target: "2", show: true },
-{ id: "5", source: "2", target: "7", show: true },
-];
-const HTTP_CONFIG = {
-  configTitle: "HTTP Trigger",
-  sections: [
-    {
-      sectionTitle: "Sandbox Settings",
-      inputs: [
-        {
-          label: "URL",
-          inputType: "TEXT",
-          value: "https://sandboxurl.com/dev7-zsddls.com/signup",
-          options: [],
-        },
-        {
-          label: "Trigger Type",
-          inputType: "SELECT",
-          value: "HTTP based trigger",
-          options: [
-            { value: "HTTP based trigger", label: "HTTP based trigger" },
-            { value: "API based trigger", label: "API based trigger" },
-          ],
-        },
-      ],
-    },
-  ],
+import HeaderLayout from "./components/HeaderLayout";
+import NodeTileStyle from "./components/NodeTileStyle";
+import SettingsDrawer from "./components/SettingsDrawer";
+import { default as NarrowLeftSidebar } from "./components/SidebarLayout";
+
+import "reactflow/dist/style.css";
+
+const initialPosition = { x: 0, y: 50 };
+const nodeDistance = 190;
+
+const calculateNodePosition = (index) => {
+  return {
+    x: initialPosition.x,
+    y: initialPosition.y + nodeDistance * index,
+  };
 };
-const AUTH_CONFIG = {
-  configTitle: "AUTH Config",
-  sections: [
-    {
-      sectionTitle: "Sign up IDP",
-      inputs: [
-        {
-          label: "Tenant Name",
-          inputType: "TEXT",
-          value: "New Tenant",
-          options: [],
+
+const mockSettings = {
+  SET_HTTP_TRIGGER: {
+    title: "HTTP Trigger",
+    settings: [
+      {
+        sectionTitle: "Sandbox URL",
+        sectionBlocks: [
+          {
+            componentType: "input",
+            key: "sandboxUrl",
+            label: "Sandbox URL",
+            type: "text",
+            value: "https://example.com/sandbox-url",
+            isDisabled: true,
+          },
+          {
+            componentType: "select",
+            key: "triggerType",
+            label: "Trigger Type",
+            type: "text",
+            value: "HTTP Trigger",
+            isDisabled: false,
+          },
+        ],
+      },
+      {
+        sectionTitle: "Custom Domain URL",
+        isSectionZeroState: true,
+        sectionZeroState: {
+          componentType: "Alert",
+          message: "Custom domain",
+          action: true,
         },
-        {
-          label: "App Environment",
-          inputType: "SELECT",
-          value: "Dev",
-          options: [
-            { value: "Dev", label: "Dev" },
-            { value: "Staging", label: "Staging" },
-          ],
-        },
-      ],
-    },
+        sectionBlocks: [
+          {
+            key: "sandboxUrl",
+            label: "Sandbox URL",
+            type: "text",
+            value: "https://example.com/sandbox-url",
+            readOnly: true,
+          },
+          {
+            key: "triggerType",
+            label: "Trigger Type",
+            type: "text",
+            value: "HTTP Trigger",
+            readOnly: true,
+          },
+        ],
+      },
+    ],
+  },
+  SET_AUTHENTICATE: {
+    title: "Authenticate",
+  },
+  SET_CREATE_TENANT: {
+    title: "Create tenant",
+  },
+  SET_USER_REDIRECT: {
+    title: "User Redirect",
+  },
+};
+
+const HTTPData = {
+  settingsID: "SET_HTTP_TRIGGER",
+  label: "HTTP TRIGGER",
+  type: "HTTP",
+  defaultDomain: "https://sandboxurl.com/dev7-zsddls.com/signup",
+  isCustomDomain: true,
+  triggerType: [
+    "HTTP based trigger",
+    "SMTP based trigger",
+    "FTP based trigger",
   ],
+  icon: "mdi:earth-arrow-right",
+  customDomain: {
+    appEnv: ["Dev", "Staging", "Prod"],
+    url: "https://test.dev.com",
+    urlPath: "",
+    params: [
+      { key: "plan", value: "standerd" },
+      { key: "search", value: "true" },
+    ],
+  },
 };
 const initialNodes = [
   {
     id: "1",
-    position: { x: 700, y: 300 },
-    data: { label: "HTTP TRIGGER", type: "HTTP", data: HTTP_CONFIG },
-    style: { backgroundColor: "rgba(255, 0, 0, 0.2)" },
+    type: "custom",
+    data: HTTPData,
+    position: calculateNodePosition(0),
   },
   {
     id: "2",
-    position: { x: 700, y: 400 },
-    data: { label: "AUTHENTICATE", type: "AUTH", data: AUTH_CONFIG, groupNodeId: "3" },
+    type: "custom",
+    data: {
+      settingsID: "SET_AUTHENTICATE",
+      label: "Authenticate User",
+      description: "description",
+      icon: "mdi:shield-account-outline",
+    },
+
+    position: calculateNodePosition(1),
   },
   {
     id: "3",
-    type: "group",
-    position: { x: 510, y: 500 },
-    style: {
-      width: 540,
-      height: 100
+    type: "custom",
+    data: {
+      settingsID: "SET_CREATE_TENANT",
+      label: "Create Tenant",
+      description: "description",
+      icon: "material-symbols:add-home-outline",
     },
-    hidden: true
+
+    position: calculateNodePosition(2),
   },
   {
     id: "4",
-    data: { label: "Sign Up IDP", type: "SIGNUPIDP", data: AUTH_CONFIG },
-    position: { x: 20, y: 20 },
-    parentNode: "3",
-    extent: "parent",
-    hidden: true
+    type: "custom",
+    data: {
+      settingsID: "SET_USER_REDIRECT",
+      label: "Redirect User",
+      description: "description",
+      icon: "ion:navigate-circle-outline",
+    },
+
+    position: calculateNodePosition(3),
+  },
+];
+const edgeStyles = {
+  strokeWidth: 2,
+};
+const edgeType = "straight";
+const initialEdges = [
+  {
+    id: "e1-2",
+    source: "1",
+    target: "2",
+    type: edgeType,
+    style: edgeStyles,
   },
   {
-    id: "5",
-    data: { label: "Sign Up Page", type: "SIGNUPPAGE", data: AUTH_CONFIG },
-    position: { x: 190, y: 20 },
-    parentNode: "3",
-    extent: "parent",
-    hidden: true
+    id: "e1-3",
+    source: "2",
+    target: "3",
+    type: edgeType,
+    style: edgeStyles,
   },
   {
-    id: "6",
-    data: { label: "Error", type: "ERRORPAGE", data: AUTH_CONFIG },
-    type: "output",
-    position: { x: 360, y: 20 },
-    parentNode: "3",
-    extent: "parent",
-    hidden: true
+    id: "e1-4",
+    source: "3",
+    target: "4",
+    type: edgeType,
+    style: edgeStyles,
   },
   {
-    id: "7",
-    position: { x: 700, y: 500 },
-    data: { label: "Create Tenant", type: "AUTH", data: AUTH_CONFIG },
+    id: "e1-5",
+    source: "4",
+    target: "5",
+    type: edgeType,
+    style: edgeStyles,
   },
 ];
 
-const App = () => {
-  const [open, setOpen] = useState(false);
-  const [activeConfig, setActiveConfig] = useState({}) as any;
-  const [nodes, setNodes] = useState(initialNodes) as any;
-  console.log("ACTIVE CONFIG", activeConfig);
-  const showDrawer = () => {
-    setOpen(true);
-  };
+const nodeTypes = {
+  custom: NodeTileStyle,
+};
 
-  const onClose = () => {
-    setActiveConfig("");
+const App = () => {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [drawerData, setDrawerData] = useState(null);
+
+  const sampleData = {
+    key: "value",
   };
 
   const onNodeClick = (event, node) => {
-    setActiveConfig(node.data.data);
-    //console.log("click nodes", nodes);
-    console.log("click node", node);
-    if (node.id === "2") {
-      setNodes(
-        nodes.map((nodes: any) =>
-        nodes.id === node.data.groupNodeId ||
-        nodes.parentNode === node.data.groupNodeId
-        ? { ...nodes, hidden: !nodes.hidden }
-        : nodes.id === "7" ? {...nodes, position: {...nodes.position, y: nodes.position.y === 500 ? 650 : 500}} : nodes
-        )
-        );
-      }
-      
-      //console.log("click nodes", node);
-      //setEdges(edges.map((edge) => ({ ...edge, show: !edge.show })));
+    const settingsID = node.data.settingsID;
+    const settings = mockSettings[settingsID];
+    console.log(settingsID);
+
+    if (settings) {
+      console.log("Settings for node:", settingsID, settings);
+      setDrawerData(settings);
+      setShowDrawer(true);
+    } else {
+      console.log("Settings not found for node:", settingsID);
+    }
+  };
+
+  const closeDrawer = () => {
+    setShowDrawer(false);
   };
 
   return (
-    <div className='mt-10 text-3xl w-full h-screen'>
-      {
-        <Drawer
-          title={activeConfig?.configTitle}
-          placement='right'
-          onClose={onClose}
-          open={Object.keys(activeConfig).length !== 0}>
-          {activeConfig?.sections?.map((section) => (
-            <div className='flex flex-col gap-5'>
-              <h3 className='text-lg'>{section.sectionTitle}</h3>
-              {section.inputs?.map((input) => (
-                <div className='flex flex-col gap-2'>
-                  <label htmlFor=''>{input.label}</label>
-                  {input.inputType === "TEXT" && (
-                    <Input
-                      type='text'
-                      value={input.value}
-                      className='border border-black'
-                    />
-                  )}
-                  {input.inputType === "SELECT" && (
-                    <Select
-                      defaultValue={input.value}
-                      options={input.options}
-                      id=''
-                      className='border border-black'></Select>
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
-        </Drawer>
-      }
-      <div style={{ width: "100vw", height: "100vh" }}>
-        <ReactFlow
-          nodes={nodes}
-          edges={initialEdges.filter((edge) => edge.show)}
-          onNodeClick={onNodeClick}
-        />
+    <div className='flex h-full'>
+      <NarrowLeftSidebar />
+      <SettingsDrawer
+        data={drawerData}
+        open={showDrawer}
+        onClose={closeDrawer}
+      />
+
+      {/* Content area */}
+
+      <div className='flex flex-1 flex-col overflow-hidden'>
+        {/* Main content */}
+        <HeaderLayout />
+        <div className='flex flex-1 items-stretch overflow-hidden'>
+          <main className='flex-1 overflow-y-auto'>
+            {/* Primary column */}
+            <section
+              aria-labelledby='primary-heading'
+              className='flex h-full min-w-0 flex-1 flex-col lg:order-last'>
+              <ReactFlow
+                nodes={initialNodes}
+                edges={initialEdges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                nodeTypes={nodeTypes}
+                onNodeClick={onNodeClick}
+                nodesDraggable={true}
+                defaultViewport={{ x: 600, y: 0, zoom: 0.8 }}
+                className='bg-teal-50'>
+                <MiniMap />
+                <Controls />
+                <Background
+                  color='#99b3ec'
+                  variant='dots'
+                />
+              </ReactFlow>
+            </section>
+          </main>
+        </div>
       </div>
     </div>
   );
