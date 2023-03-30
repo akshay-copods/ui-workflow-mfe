@@ -2,7 +2,6 @@ import { Alert, Button, Input, Select } from "antd";
 import React from "react";
 
 const renderSectionBlocks = (sectionBlocks) => {
-  console.log("sectionBlocks", sectionBlocks);
   return sectionBlocks.map((block) => {
     switch (block.componentType) {
       case "input":
@@ -73,7 +72,6 @@ const renderSettings = ({ settings }) => {
 };
 
 const SchemaToJSX = (settingsData) => {
-  console.log("settingsData", settingsData);
   if (!settingsData) {
     return false;
   }
@@ -81,7 +79,7 @@ const SchemaToJSX = (settingsData) => {
   return (
     <div>
       {renderSettings(settingsData)}
-      {console.log("setting actions", settingsData?.settingActions)}
+
       <div className='flex gap-4'>
         {settingsData?.settingActions &&
           settingsData.settingActions.map((action) => (

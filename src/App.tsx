@@ -45,10 +45,11 @@ const initialNodes = [
       settingsID: "SET_AUTHENTICATE",
       label: "Authenticate User",
       icon: "mdi:shield-account-outline",
+      groupNodeId: "3",
     },
-
     position: calculateNodePosition(1),
   },
+
   {
     id: "3",
     type: "custom",
@@ -72,6 +73,56 @@ const initialNodes = [
 
     position: calculateNodePosition(3),
   },
+  {
+    id: "5",
+    type: "custom",
+    data: {
+      settingsID: "SET_AUTHENTICATE_IDP",
+      label: "Signup IDP",
+      icon: "mdi:shield-account-outline",
+    },
+    parentNode: "2",
+    extent: "parent",
+    hidden: true,
+    position: calculateNodePosition(1),
+  },
+  {
+    id: "6",
+    type: "custom",
+    data: {
+      settingsID: "SET_AUTHENTICATE_SIGNUP_PAGE",
+      label: "Signup Page",
+      icon: "mdi:shield-account-outline",
+    },
+    parentNode: "2",
+    extent: "parent",
+    hidden: true,
+
+    position: calculateNodePosition(1),
+  },
+  {
+    id: "7",
+    type: "custom",
+    data: {
+      settingsID: "SET_AUTHENTICATE_ERROR_PAGE",
+      label: "ERROR Page",
+      icon: "mdi:shield-account-outline",
+    },
+    parentNode: "2",
+    extent: "parent",
+    hidden: true,
+    position: calculateNodePosition(1),
+  },
+  {
+    id: "8",
+    type: "group",
+    position: { x: 510, y: 500 },
+    style: {
+      width: 540,
+      height: 100,
+    },
+    hidden: true,
+  },
 ];
 const edgeStyles = {
   strokeWidth: 2,
@@ -84,6 +135,7 @@ const initialEdges = [
     target: "2",
     type: edgeType,
     style: edgeStyles,
+    show: false,
   },
   {
     id: "e1-3",
@@ -91,6 +143,7 @@ const initialEdges = [
     target: "3",
     type: edgeType,
     style: edgeStyles,
+    show: false,
   },
   {
     id: "e1-4",
@@ -98,6 +151,7 @@ const initialEdges = [
     target: "4",
     type: edgeType,
     style: edgeStyles,
+    show: false,
   },
   {
     id: "e1-5",
@@ -105,6 +159,7 @@ const initialEdges = [
     target: "5",
     type: edgeType,
     style: edgeStyles,
+    show: false,
   },
 ];
 
@@ -125,14 +180,30 @@ const App = () => {
   const onNodeClick = (event, node) => {
     const settingsID = node.data.settingsID;
     const settings = mockConfig[settingsID];
-    console.log(settingsID);
+    if (node.id === "2") {
+      console.log("INSIDE IF");
+      setNodes(
+        nodes.map((nodes: any) =>
+          nodes.id === node.data.groupNodeId ||
+          nodes.parentNode === node.data.groupNodeId
+            ? { ...nodes, hidden: !nodes.hidden }
+            : nodes.id === "7"
+            ? {
+                ...nodes,
+                position: {
+                  ...nodes.position,
+                  y: nodes.position.y === 500 ? 650 : 500,
+                },
+              }
+            : nodes
+        )
+      );
+    }
 
     if (settings) {
-      console.log("Settings for node:", settingsID, settings);
       setDrawerData(settings);
       setShowDrawer(true);
     } else {
-      console.log("Settings not found for node:", settingsID);
     }
   };
 
@@ -162,7 +233,7 @@ const App = () => {
               className='flex h-full min-w-0 flex-1 flex-col lg:order-last'>
               <ReactFlow
                 nodes={initialNodes}
-                edges={initialEdges}
+                edges={initialEdges.filter((edge) => edge.show)}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 nodeTypes={nodeTypes}
