@@ -135,5 +135,23 @@ export const mockConfig = {
   },
   SET_USER_REDIRECT: {
     title: "User Redirect",
+    settings: [
+      {
+        sectionTitle: "URL Settings",
+        sectionBlocks: [
+          {
+            componentType: "input",
+            key: "redirectURLInput",
+            label: "Enter Redirect URL",
+            type: "text",
+            value: "",
+            isDisabled: true,
+            placeholder:
+              "eg. app.companyname.com/onboarding?signup=workemailEnter your custom domain URL",
+          },
+        ],
+      },
+    ],
+    settingActions: [{ type: "button", isDisabled: true, text: "Visit URL" }],
   },
 };
