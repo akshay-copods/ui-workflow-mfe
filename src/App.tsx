@@ -19,7 +19,14 @@ import "reactflow/dist/style.css";
 const initialPosition = { x: 0, y: 50 };
 const nodeDistance = 190;
 
-const calculateNodePosition = (index) => {
+const calculateNodePosition = (index, nodeType) => {
+  if(nodeType === "group"){
+    console.log(initialPosition.x)
+    return {
+      x: initialPosition.x - (500/3),
+      y: initialPosition.y + nodeDistance * index,
+    };
+  }
   return {
     x: initialPosition.x,
     y: initialPosition.y + nodeDistance * index,
@@ -31,97 +38,85 @@ const HTTPData = {
   label: "HTTP TRIGGER",
   icon: "mdi:earth-arrow-right",
 };
+
 const initialNodes = [
-  {
+    {
     id: "1",
     type: "custom",
     data: HTTPData,
-    position: calculateNodePosition(0),
+    position: calculateNodePosition(0, "node"),
   },
   {
     id: "2",
     type: "custom",
     data: {
-      settingsID: "SET_AUTHENTICATE",
+      // settingsID: "SET_AUTHENTICATE",
       label: "Authenticate User",
       icon: "mdi:shield-account-outline",
       groupNodeId: "3",
     },
-    position: calculateNodePosition(1),
+    position: calculateNodePosition(1, "node"),
   },
-
   {
     id: "3",
-    type: "custom",
-    data: {
-      settingsID: "SET_CREATE_TENANT",
-      label: "Create Tenant",
-      icon: "material-symbols:add-home-outline",
+    type: "group",
+    position: calculateNodePosition(2, "group"),
+    style: {
+      width: 500,
+      height: 170
     },
-
-    position: calculateNodePosition(2),
+    hidden: false
   },
   {
     id: "4",
     type: "custom",
     data: {
-      settingsID: "SET_USER_REDIRECT",
-      label: "Redirect User",
-      description: "description",
-      icon: "ion:navigate-circle-outline",
+      settingsID: "SET_AUTHENTICATE",
+      label: "Signup IDP",
+      icon: "mdi:shield-account-outline",
     },
-
-    position: calculateNodePosition(3),
+    position: { x: 20, y: 20 },
+    parentNode: "3",
+    extent: "parent",
+    hidden: false
   },
   {
     id: "5",
     type: "custom",
     data: {
-      settingsID: "SET_AUTHENTICATE_IDP",
-      label: "Signup IDP",
+      settingsID: "SET_AUTHENTICATE",
+      label: "Signup Page",
       icon: "mdi:shield-account-outline",
     },
-    parentNode: "2",
+    position: {  x: 190, y: 20 },
+    parentNode: "3",
     extent: "parent",
-    hidden: true,
-    position: calculateNodePosition(1),
+    hidden: false
   },
   {
     id: "6",
     type: "custom",
     data: {
-      settingsID: "SET_AUTHENTICATE_SIGNUP_PAGE",
-      label: "Signup Page",
+      settingsID: "SET_AUTHENTICATE",
+      label: "Error Page",
       icon: "mdi:shield-account-outline",
     },
-    parentNode: "2",
+    position: { x: 360, y: 20 },
+    parentNode: "3",
     extent: "parent",
-    hidden: true,
-
-    position: calculateNodePosition(1),
+    hidden: false
   },
-  {
+    {
     id: "7",
     type: "custom",
     data: {
-      settingsID: "SET_AUTHENTICATE_ERROR_PAGE",
-      label: "ERROR Page",
-      icon: "mdi:shield-account-outline",
+      settingsID: "SET_CREATE_TENANT",
+      label: "Create Tenant",
+      icon: "material-symbols:add-home-outline",
+      afterGroupNodeId: "3",
     },
-    parentNode: "2",
-    extent: "parent",
-    hidden: true,
-    position: calculateNodePosition(1),
-  },
-  {
-    id: "8",
-    type: "group",
-    position: { x: 510, y: 500 },
-    style: {
-      width: 540,
-      height: 100,
-    },
-    hidden: true,
+
+    position: calculateNodePosition(3, "node"),
   },
 ];
 const edgeStyles = {
@@ -135,23 +130,39 @@ const initialEdges = [
     target: "2",
     type: edgeType,
     style: edgeStyles,
-    show: false,
+    show: true,
   },
   {
-    id: "e1-3",
+    id: "e2-3",
     source: "2",
     target: "3",
     type: edgeType,
     style: edgeStyles,
-    show: false,
+    show: true,
   },
   {
-    id: "e1-4",
-    source: "3",
+    id: "e3-4",
+    source: "2",
     target: "4",
     type: edgeType,
     style: edgeStyles,
-    show: false,
+    show: true,
+  },
+  {
+    id: "e3-5",
+    source: "4",
+    target: "5",
+    type: edgeType,
+    style: edgeStyles,
+    show: true,
+  },
+  {
+    id: "e3-6",
+    source: "5",
+    target: "6",
+    type: edgeType,
+    style: edgeStyles,
+    show: true,
   },
   {
     id: "e1-5",
@@ -159,7 +170,31 @@ const initialEdges = [
     target: "5",
     type: edgeType,
     style: edgeStyles,
+    show: true,
+  },
+  {
+    id: "e1-2",
+    source: "1",
+    target: "2",
+    type: edgeType,
+    style: edgeStyles,
     show: false,
+  },
+  {
+    id: "e2-3",
+    source: "2",
+    target: "7",
+    type: edgeType,
+    style: edgeStyles,
+    show: false,
+  },
+  {
+    id: "e5-7",
+    source: "5",
+    target: "7",
+    type: edgeType,
+    style: edgeStyles,
+    show: true,
   },
 ];
 
@@ -180,24 +215,17 @@ const App = () => {
   const onNodeClick = (event, node) => {
     const settingsID = node.data.settingsID;
     const settings = mockConfig[settingsID];
-    if (node.id === "2") {
+    if (node.data.groupNodeId) {
       console.log("INSIDE IF");
       setNodes(
         nodes.map((nodes: any) =>
           nodes.id === node.data.groupNodeId ||
           nodes.parentNode === node.data.groupNodeId
             ? { ...nodes, hidden: !nodes.hidden }
-            : nodes.id === "7"
-            ? {
-                ...nodes,
-                position: {
-                  ...nodes.position,
-                  y: nodes.position.y === 500 ? 650 : 500,
-                },
-              }
-            : nodes
+            : nodes.afterGroupNodeId ? {...nodes, position: {...nodes.position, y: nodes.position.y === 500 ? 650 : 500}} : nodes
         )
       );
+      setEdges(edges.map((edge) => ({ ...edge, show: !edge.show })));
     }
 
     if (settings) {
@@ -232,8 +260,8 @@ const App = () => {
               aria-labelledby='primary-heading'
               className='flex h-full min-w-0 flex-1 flex-col lg:order-last'>
               <ReactFlow
-                nodes={initialNodes}
-                edges={initialEdges.filter((edge) => edge.show)}
+                nodes={nodes}
+                edges={edges.filter((edge) => edge.show)}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 nodeTypes={nodeTypes}
