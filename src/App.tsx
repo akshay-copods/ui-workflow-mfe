@@ -59,7 +59,6 @@ const initialNodes = [
   },
   {
     id: "3",
-    type: "group",
     position: calculateNodePosition(2, "group"),
     style: {
       width: 500,
@@ -141,14 +140,6 @@ const initialEdges = [
     show: true,
   },
   {
-    id: "e3-4",
-    source: "2",
-    target: "4",
-    type: edgeType,
-    style: edgeStyles,
-    show: true,
-  },
-  {
     id: "e3-5",
     source: "4",
     target: "5",
@@ -222,7 +213,7 @@ const App = () => {
           nodes.id === node.data.groupNodeId ||
           nodes.parentNode === node.data.groupNodeId
             ? { ...nodes, hidden: !nodes.hidden }
-            : nodes.afterGroupNodeId ? {...nodes, position: {...nodes.position, y: nodes.position.y === 500 ? 650 : 500}} : nodes
+            : nodes.id === "7" ? {...nodes, position: {...nodes.position, y: nodes.position.y === 500 ? 650 : 500}} : nodes
         )
       );
       setEdges(edges.map((edge) => ({ ...edge, show: !edge.show })));
